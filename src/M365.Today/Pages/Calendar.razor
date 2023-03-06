@@ -68,7 +68,7 @@
 
         graphClient = clientFactory.GetAuthenticatedClient();
 
-        var mail = await graphClient.Me.Messages.Request().GetAsync();
+        var mail = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime/dateTime").GetAsync();
         var eve1 = await graphClient.Me.Calendar.Request().GetAsync();
 
         // Specifies the start and end of the view on the calendar
