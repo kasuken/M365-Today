@@ -74,47 +74,33 @@
 
         graphClient = clientFactory.GetAuthenticatedClient();
 
-        var mail = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime desc").GetAsync();
-        var todos = await graphClient.Me.Todo.Lists.Request().GetAsync();
-
         // Specifies the start and end of the view on the calendar
         // Translates to: ?startDateTime=""&endDateTime=""
-        //var viewOptions = new List<QueryOption>
-        //{
-        //    new QueryOption("startDateTime", startOfWeek.ToString("o")),
-        //    new QueryOption("endDateTime", endOfWeek.ToString("o"))
-        //};
         var viewOptions = new List<QueryOption>
         {
-            new QueryOption("startDateTime", "2023-03-06T20:22:59.067Z"),
-            new QueryOption("endDateTime", "2023-03-13T20:22:59.067Z")
+            new QueryOption("startDateTime", startOfWeek.ToString("o")),
+            new QueryOption("endDateTime", endOfWeek.ToString("o"))
         };
 
-        var a = await graphClient.Me.CalendarView.Request(viewOptions).GetAsync();
+        var eventPage = await graphClient.Me
+            .CalendarView
+            .Request(viewOptions)
+            .Header("Prefer", $"outlook.timezone=\"{graphTimeZone}\"")
+            .Top(50)
+            .Select(e => new
+            {
+                e.Subject,
+                e.Organizer,
+                e.Start,
+                e.End
+            })
+            .OrderBy("start/dateTime")
+            .GetAsync();
 
-        //var result = await graphClient.Me.Calendar.CalendarView.Request().GetAsync(;
+        events = eventPage.CurrentPage;
 
-        //var eventPage = await graphClient.Me
-        //    .CalendarView
-        //    .Request(viewOptions)
-        //    // Send user time zone in request so date/time in
-        //    // response will be in preferred time zone
-        //    //.Header("Prefer", $"outlook.timezone=\"{graphTimeZone}\"")
-        //    // Get max 50 per request
-        //    .Top(50)
-        //    // Only return fields app will use
-        //    .Select(e => new
-        //    {
-        //        e.Subject,
-        //        e.Organizer,
-        //        e.Start,
-        //        e.End
-        //    })
-        //    // Order results chronologically
-        //    .OrderBy("start/dateTime")
-        //    .GetAsync();
-
-        //events = eventPage.CurrentPage;
+        var mail = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime desc").GetAsync();
+        var todos = await graphClient.Me.Todo.Lists.Request().GetAsync();
     }
 
     private DateTime GetUtcStartOfWeekInTimeZone(DateTime today, string timeZoneId)
