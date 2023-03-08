@@ -10,14 +10,19 @@
 
 <PageTitle>M365.Today</PageTitle>
 
-<FluentCard>
+@*<FluentCard>
     <h2>Hello World!</h2>
     <FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
-</FluentCard>
+</FluentCard>*@
 
 <AuthorizeView>
     <Authorized>
-        <h1 class="mb-3">Calendar</h1>
+        <M365.Today.Components.CalendarCard />
+
+        <M365.Today.Components.MailCard />
+
+        <M365.Today.Components.ToDoCard />
+@*        <h1 class="mb-3">Calendar</h1>
         <table class="table">
             <thead>
                 <tr>
@@ -38,7 +43,7 @@
                     </tr>
                 }
             </tbody>
-        </table>
+        </table>*@
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -46,91 +51,9 @@
 </AuthorizeView>
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationStateTask { get; set; }
-
-    private GraphServiceClient? graphClient;
-    private IList<Event> events = new List<Event>();
-    private string? dateTimeFormat;
 
     protected override async Task OnInitializedAsync()
     {
-        if (authenticationStateTask == null)
-        {
-            throw new AuthenticationException(new Error
-                {
-                    Message = "Unable to access authentication state"
-                });
-        }
 
-        // Get the user
-        var user = (await authenticationStateTask).User;
-        var graphTimeZone = user.GetUserGraphTimeZone();
-        dateTimeFormat = $"{user.GetUserGraphDateFormat()} {user.GetUserGraphTimeFormat()}";
-
-        // Calculate the start and end of the current week in user's time zone
-        var startOfWeek = GetUtcStartOfWeekInTimeZone(DateTime.Today, graphTimeZone);
-        var endOfWeek = startOfWeek.AddDays(7);
-
-        graphClient = clientFactory.GetAuthenticatedClient();
-
-        // Specifies the start and end of the view on the calendar
-        // Translates to: ?startDateTime=""&endDateTime=""
-        var viewOptions = new List<QueryOption>
-        {
-            new QueryOption("startDateTime", startOfWeek.ToString("o")),
-            new QueryOption("endDateTime", endOfWeek.ToString("o"))
-        };
-
-        var eventPage = await graphClient.Me
-            .CalendarView
-            .Request(viewOptions)
-            .Header("Prefer", $"outlook.timezone=\"{graphTimeZone}\"")
-            .Top(50)
-            .Select(e => new
-            {
-                e.Subject,
-                e.Organizer,
-                e.Start,
-                e.End
-            })
-            .OrderBy("start/dateTime")
-            .GetAsync();
-
-        events = eventPage.CurrentPage;
-
-        var mail = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime desc").GetAsync();
-        var todos = await graphClient.Me.Todo.Lists.Request().GetAsync();
-    }
-
-    private DateTime GetUtcStartOfWeekInTimeZone(DateTime today, string timeZoneId)
-    {
-        // Time zone returned by Graph could be Windows or IANA style
-        // TimeZoneConverter can take either
-        TimeZoneInfo userTimeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
-
-        // Assumes Sunday as first day of week
-        int diff = System.DayOfWeek.Sunday - today.DayOfWeek;
-
-        // create date as unspecified kind
-        var unspecifiedStart = DateTime.SpecifyKind(today.AddDays(diff), DateTimeKind.Unspecified);
-
-        // convert to UTC
-        return TimeZoneInfo.ConvertTimeToUtc(unspecifiedStart, userTimeZone);
-    }
-
-    private string FormatIso8601DateTime(string iso8601DateTime)
-    {
-        // Load into a DateTime
-        var dateTime = DateTime.Parse(iso8601DateTime);
-
-        if (!string.IsNullOrWhiteSpace(dateTimeFormat))
-        {
-            // Format it using the user's settings
-            return dateTime.ToString(dateTimeFormat);
-        }
-
-        // Fallback to return original value
-        return iso8601DateTime;
     }
 }
