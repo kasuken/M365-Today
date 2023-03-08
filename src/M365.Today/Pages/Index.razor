@@ -18,32 +18,8 @@
 <AuthorizeView>
     <Authorized>
         <M365.Today.Components.CalendarCard />
-
         <M365.Today.Components.MailCard />
-
-        <M365.Today.Components.ToDoCard />
-@*        <h1 class="mb-3">Calendar</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Organizer</th>
-                    <th>Subject</th>
-                    <th>Start</th>
-                    <th>End</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var calendarEvent in events)
-                {
-                    <tr>
-                        <td>@calendarEvent.Organizer.EmailAddress.Name</td>
-                        <td>@calendarEvent.Subject</td>
-                        <td>@FormatIso8601DateTime(calendarEvent.Start.DateTime)</td>
-                        <td>@FormatIso8601DateTime(calendarEvent.End.DateTime)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>*@
+        @*<M365.Today.Components.ToDoCard />*@
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />

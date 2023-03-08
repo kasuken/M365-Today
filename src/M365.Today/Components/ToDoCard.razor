@@ -1,5 +1,46 @@
-﻿
+﻿@using M365.Today.Services;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.Graph
+@using TimeZoneConverter
+
+@using Microsoft.Fast.Components.FluentUI
+
+@inject M365.Today.Services.GraphClientFactory clientFactory
+
+@if (isLoading)
+{
+    <FluentProgressRing></FluentProgressRing>
+}
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
 
+    private GraphServiceClient? graphClient;
+    private IList<Todo> todos = new List<Todo>();
+    private string? dateTimeFormat;
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask == null)
+        {
+            throw new AuthenticationException(new Error
+                {
+                    Message = "Unable to access authentication state"
+                });
+        }
+
+        graphClient = clientFactory.GetAuthenticatedClient();
+
+        var lists = await graphClient.Me.Todo.Request().GetAsync();
+
+        foreach (var item in lists.Lists)
+        {
+            //todos.Add(item);
+        }
+
+        isLoading = false;
+    }
 }
