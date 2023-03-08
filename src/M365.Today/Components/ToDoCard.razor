@@ -11,13 +11,26 @@
 {
     <FluentProgressRing></FluentProgressRing>
 }
+else
+{
+    <FluentCard>
+        <div class="contents">
+            <div data-is-scrollable="true" style="height:500px;overflow-y:auto;">
+                <FluentDataGrid RowsData="@todos">
+                    <PropertyColumn Property="@(p => p.Title)" Title="Title" />
+                    <PropertyColumn Property="@(p => Convert.ToDateTime(p.DueDateTime.DateTime))" Format="MM-dd-yyyy" Title="Due Date" />
+                </FluentDataGrid>
+            </div>
+        </div>
+    </FluentCard>
+}
 
 @code {
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
 
     private GraphServiceClient? graphClient;
-    private IList<Todo> todos = new List<Todo>();
+    private IQueryable<TodoTask> todos;
     private string? dateTimeFormat;
 
     private bool isLoading = true;
@@ -34,12 +47,20 @@
 
         graphClient = clientFactory.GetAuthenticatedClient();
 
-        var lists = await graphClient.Me.Todo.Request().GetAsync();
+        var lists = await graphClient.Me.Todo.Lists.Request().GetAsync();
+        var listTodo = new List<TodoTask>();
 
-        foreach (var item in lists.Lists)
+        foreach (var list in lists.CurrentPage)
         {
-            //todos.Add(item);
+            var tasks = await graphClient.Me.Todo.Lists[list.Id].Tasks.Request().GetAsync();
+
+            foreach (var task in tasks.Where(c => c.Status == Microsoft.Graph.TaskStatus.NotStarted))
+            {
+                listTodo.Add(task);
+            }
         }
+
+        todos = listTodo.AsQueryable();
 
         isLoading = false;
     }

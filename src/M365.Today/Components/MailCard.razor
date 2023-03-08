@@ -11,13 +11,27 @@
 {
     <FluentProgressRing></FluentProgressRing>
 }
+else
+{
+    <FluentCard>
+        <div class="contents">
+            <div data-is-scrollable="true" style="height:500px;overflow-y:auto;">
+                <FluentDataGrid RowsData="@messages">
+                    <PropertyColumn Property="@(p => p.Subject)" Title="Title" />
+                    <PropertyColumn Property="@(p => p.Sender.EmailAddress.Name)" Title="Sender" />
+                    <PropertyColumn Property="@(p => p.ReceivedDateTime.Value.LocalDateTime)" Title="Received" />
+                </FluentDataGrid>
+            </div>
+        </div>
+    </FluentCard>
+}
 
 @code {
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
 
     private GraphServiceClient? graphClient;
-    private IList<Message> messages = new List<Message>();
+    private IQueryable<Message> messages;
     private string? dateTimeFormat;
 
     private bool isLoading = true;
@@ -34,7 +48,9 @@
 
         graphClient = clientFactory.GetAuthenticatedClient();
 
-        messages = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime desc").GetAsync();
+        var listMessages = await graphClient.Me.Messages.Request().OrderBy("receivedDateTime desc").GetAsync();
+
+        messages = listMessages.CurrentPage.ToList().AsQueryable();
 
         isLoading = false;
     }

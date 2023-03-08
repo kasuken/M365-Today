@@ -1,14 +1,10 @@
 ﻿@page "/"
-@using M365.Today.Services;
-@using Microsoft.AspNetCore.Components.Authorization;
-@using Microsoft.Graph
-@using TimeZoneConverter
 
 @attribute [Authorize]
 
 @inject M365.Today.Services.GraphClientFactory clientFactory
 
-<PageTitle>M365.Today</PageTitle>
+<PageTitle>M365 Today</PageTitle>
 
 @*<FluentCard>
     <h2>Hello World!</h2>
@@ -17,9 +13,22 @@
 
 <AuthorizeView>
     <Authorized>
-        <M365.Today.Components.CalendarCard />
-        <M365.Today.Components.MailCard />
-        @*<M365.Today.Components.ToDoCard />*@
+
+        <Layout>
+            <Header Height="200">
+            </Header>
+
+            <Stack Orientation="Orientation.Horizontal" Width="50%" HorizontalGap="0">
+                <BodyContent>
+                    <M365.Today.Components.CalendarCard />
+                    <Spacer />
+                    <M365.Today.Components.MailCard />
+                    <Spacer />
+                    <M365.Today.Components.ToDoCard />
+                </BodyContent>
+            </Stack>
+        </Layout>
+
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
