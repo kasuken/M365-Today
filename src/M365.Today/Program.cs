@@ -3,6 +3,7 @@ using M365.Today.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Fast.Components.FluentUI;
 using Microsoft.Graph;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -34,5 +35,7 @@ builder.Services.AddMsalAuthentication<RemoteAuthenticationState, RemoteUserAcco
 .AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, RemoteUserAccount, GraphUserAccountFactory>();
 
 builder.Services.AddScoped<M365.Today.Services.GraphClientFactory>();
+
+builder.Services.AddFluentUIComponents();
 
 await builder.Build().RunAsync();

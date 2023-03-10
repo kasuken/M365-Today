@@ -9,13 +9,20 @@
 
 @if (isLoading)
 {
-    <FluentProgressRing></FluentProgressRing>
+    <FluentCard Class="column">
+        <FluentSkeleton style="border-radius: 4px; width: 50px; height: 50px;" Shape="SkeletonShape.Circle"></FluentSkeleton>
+        <FluentSkeleton style="border-radius: 4px; margin-top: 10px; height: 10px;" Shape="SkeletonShape.Rect"></FluentSkeleton>
+        <FluentSkeleton style="border-radius: 4px; margin-top: 10px; height: 10px;" Shape="SkeletonShape.Rect"></FluentSkeleton>
+        <FluentSkeleton style="border-radius: 4px; margin-top: 10px; height: 10px;" Shape="SkeletonShape.Rect"></FluentSkeleton>
+        <FluentSkeleton style="border-radius: 4px; width: 75px; height: 30px; margin-top: 20px;margin-bottom: 10px;" Shape="SkeletonShape.Rect"></FluentSkeleton>
+    </FluentCard>
 }
 else
 {
-    <FluentCard>
+    <FluentCard Class="column">
         <div class="contents">
-            <div data-is-scrollable="true" style="height:500px;overflow-y:auto;">
+            <FluentIcon Name="@FluentIcons.Mail" Size="@IconSize.Size32" Variant="@IconVariant.Regular" Color="@Color.Accent" />
+            <div data-is-scrollable="true">
                 <FluentDataGrid RowsData="@messages">
                     <PropertyColumn Property="@(p => p.Subject)" Title="Title" />
                     <PropertyColumn Property="@(p => p.Sender.EmailAddress.Name)" Title="Sender" />

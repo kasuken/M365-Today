@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@using Microsoft.Fast.Components.FluentUI
+
 @attribute [Authorize]
 
 @inject M365.Today.Services.GraphClientFactory clientFactory
@@ -13,22 +15,15 @@
 
 <AuthorizeView>
     <Authorized>
+        <div class="row">
 
-        <Layout>
-            <Header Height="200">
-            </Header>
+            <M365.Today.Components.CalendarCard />
 
-            <Stack Orientation="Orientation.Horizontal" Width="50%" HorizontalGap="0">
-                <BodyContent>
-                    <M365.Today.Components.CalendarCard />
-                    <Spacer />
-                    <M365.Today.Components.MailCard />
-                    <Spacer />
-                    <M365.Today.Components.ToDoCard />
-                </BodyContent>
-            </Stack>
-        </Layout>
+            <M365.Today.Components.MailCard />
 
+            <M365.Today.Components.ToDoCard />
+
+        </div>
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />

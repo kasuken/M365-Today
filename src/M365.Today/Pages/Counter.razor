@@ -8,6 +8,18 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+
+<Layout>
+    <Stack Orientation="Orientation.Horizontal"
+           HorizontalAlignment="StackHorizontalAlignment.Horizontal"
+           HorizontalGap="4"
+           Style="border: 1px dotted var(--accent-fill-rest)">
+        <div class="demopanel" style="width: 150px">Horizontal <br />item 1</div>
+        <div class="demopanel">Horizontal item 2</div>
+    </Stack>
+
+
+</Layout>
 @code {
     private int currentCount = 0;
 

@@ -4,6 +4,27 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body {
+    background-image: url(https://bing.biturl.top/?resolution=3840&format=image&index=0&mkt=zh-CN);
+    height: 100%;
+    width: 100%;
+    /*background-position: center;*/
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 33.33%;
+    height: 400px;
+    padding: 8px;
+    margin: 12px;
+    text-align: center;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
