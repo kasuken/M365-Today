@@ -1,0 +1,39 @@
+﻿@page "/"
+
+@using Microsoft.Fast.Components.FluentUI
+
+@attribute [Authorize]
+
+@inject M365.Today.Services.GraphClientFactory clientFactory
+
+<PageTitle>M365 Today</PageTitle>
+
+@*<FluentCard>
+    <h2>Hello World!</h2>
+    <FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
+</FluentCard>*@
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+
+            <M365.Today.Components.CalendarCard />
+
+            <M365.Today.Components.MailCard />
+
+            <M365.Today.Components.ToDoCard />
+
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}
